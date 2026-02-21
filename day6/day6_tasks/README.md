@@ -1,66 +1,41 @@
-## Foundry
+## Wek 5 Day 6 Tasks
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+### Task 1
 
-Foundry consists of:
+I deployed five contracts: ERC20.sol, Save.sol, SaveEther.sol, SchoolManagement.sol, Todo.sol to the Lisk Sepolia Network.
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Here are the contract addresses for each of them:
 
-## Documentation
+#### ERC20 contract
 
-https://book.getfoundry.sh/
+contractName: ERC20
+contractAddress: 0xcca8a915d05335cb11842e26ac4bc7539464e479
 
-## Usage
+#### Save contract
 
-### Build
+This save contract works for Ether and ERC 20.
 
-```shell
-$ forge build
-```
+contractName: Save
+contractAddress: 0x27abc7e5997819a2fce775b0f5564dc486fdf535
 
-### Test
+#### Save Ether contract
 
-```shell
-$ forge test
-```
+This save contract works for Ether only:
 
-### Format
+contractName: SaveEther
+contractAddress: 0xc5b10e9cf8eca69fdaaa1e49d17a94ac8d976203
 
-```shell
-$ forge fmt
-```
+#### School Management contract
 
-### Gas Snapshots
+contractName: SchoolManagement
+contractAddress: 0x740c2f80b2e6adee9e44da59ae4e4b83c5f464e8
 
-```shell
-$ forge snapshot
-```
+#### Todo contract
 
-### Anvil
+contractName: Todo
+contractAddress: 0x07d5aa5dfa85b70d79d606ba7efaefa9d2dad7f2
 
-```shell
-$ anvil
-```
 
-### Deploy
+### Task 2
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+I have writen a school management contract before, so, I only added the logic Remove a student and Suspend staff. I also improved my employ new staff's logic
