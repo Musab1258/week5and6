@@ -15,44 +15,35 @@ contract MultisigTest is Test {
     address nonOwner = address(0x44);
 
     function setUp() public {
-        // 1. Deploy the Factory
+        // 1. Deploy Factory
         factory = new MultisigFactory();
 
-        // 2. Prepare arguments for the Child
+        // 2. Prepare Owners
         address[] memory owners = new address[](3);
         owners[0] = owner1;
         owners[1] = owner2;
         owners[2] = owner3;
 
-        // 3. Create the Child Wallet via Factory
+        // 3. Create Wallet
         address walletAddr = factory.createWallet(owners, 2);
-        
-        // 4. Point our variable to the new address
         wallet = MultisigWallet(payable(walletAddr));
-        
-        // 5. Fund the wallet to test execution
+
+        // 4. Fund Wallet
         vm.deal(address(wallet), 10 ether);
     }
 
-    // TEST 1: Check Factory Deployment
-    function testFactoryDeployment() public {
-        // Check if owners were set correctly in the child
+    function testFactoryDeployment() public view {
         address[] memory storedOwners = wallet.getOwners();
         assertEq(storedOwners.length, 3);
         assertEq(storedOwners[0], owner1);
         assertEq(wallet.threshold(), 2);
     }
 
-    // TEST 2: Submit Transaction
     function testSubmitTransaction() public {
-        // Prank: Act as owner1
         vm.startPrank(owner1);
         
-        // Send 1 ether to owner3
-        bytes memory data = "";
-        wallet.submitTransaction(owner3, 1 ether, data);
+        wallet.submitTransaction(owner3, 1 ether, "");
         
-        // Verify tx exists
         (address to, uint256 value, , bool executed, uint256 numConfirmations) = wallet.getTransaction(0);
         
         assertEq(to, owner3);
@@ -63,25 +54,16 @@ contract MultisigTest is Test {
         vm.stopPrank();
     }
 
-    // TEST 3: Confirm and Execute Flow
     function testExecuteTransaction() public {
-        // 1. Submit (by Owner 1)
         vm.prank(owner1);
         wallet.submitTransaction(owner3, 1 ether, "");
 
-        // 2. Confirm (by Owner 1)
         vm.prank(owner1);
         wallet.confirmTransaction(0);
 
-        // 3. Confirm (by Owner 2)
         vm.prank(owner2);
         wallet.confirmTransaction(0);
 
-        // Check confirmation count
-        (,,,, uint256 numConfirmations) = wallet.getTransaction(0);
-        assertEq(numConfirmations, 2);
-
-        // 4. Execute 
         uint256 balanceBefore = owner3.balance;
         
         vm.prank(owner1);
@@ -89,13 +71,11 @@ contract MultisigTest is Test {
 
         uint256 balanceAfter = owner3.balance;
 
-        // Verify Execution
         (,,, bool executed,) = wallet.getTransaction(0);
         assertTrue(executed);
         assertEq(balanceAfter - balanceBefore, 1 ether);
     }
 
-    // TEST 4: Security (Revoke)
     function testRevokeConfirmation() public {
         vm.startPrank(owner1);
         wallet.submitTransaction(owner3, 1 ether, "");
@@ -111,9 +91,13 @@ contract MultisigTest is Test {
         vm.stopPrank();
     }
 
-    // TEST 5: Security (Non-owner cannot submit)
-    function testFailNonOwnerSubmit() public {
-        vm.prank(nonOwner); 
+    function testRevert_NonOwnerSubmit() public {
+        vm.startPrank(nonOwner); 
+        
+        vm.expectRevert("Not an owner"); 
+        
         wallet.submitTransaction(owner3, 1 ether, "");
+        
+        vm.stopPrank();
     }
 }
